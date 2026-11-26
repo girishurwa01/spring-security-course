@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- pom.xml = the "shopping list" for your project.
+     Maven reads it and downloads the libraries (dependencies) you ask for. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- The "parent" gives us sensible defaults and matching library versions -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.2.0</version>
+    </parent>
+
+    <groupId>com.girish</groupId>
+    <artifactId>hello</artifactId>
+    <version>0.0.1</version>
+
+    <properties>
+        <java.version>25</java.version>
+    </properties>
+
+    <dependencies>
+        <!-- Lets us build web endpoints (URLs). Includes a built-in Tomcat web server. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- ===========================================================
+             LESSON 2 TODO: add Spring Security.
+             Copy the shape of the webmvc <dependency> block above
+             (lines 26-29). Same groupId. Only the artifactId changes:
+                 spring-boot-starter-security
+             Type it on the empty line below. Then save (Cmd+S).
+             =========================================================== -->
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Gives us the "mvn spring-boot:run" command -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
