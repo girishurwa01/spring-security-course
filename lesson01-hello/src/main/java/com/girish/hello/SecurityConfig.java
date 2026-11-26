@@ -25,7 +25,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/hello", "/error").permitAll()
-                .requestMatchers("/admin").hasRole("ADMIN")
+                .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")   // /** = "and everything under /admin/"
 
                 // DONE ✅ (Lesson 5): only users with role ADMIN may open /admin.
                 //          Write:  .requestMatchers("<url>").hasRole("<ROLE>")
@@ -57,6 +57,15 @@ public class SecurityConfig {
     //  application.properties is no longer used. (See TODO C there.)
     // =================================================================
     // =================================================================
+    //  LESSON 7 — TODO F (do this LAST, after TODO E):
+    //  Your users now live in the DATABASE (data.sql + DbUserDetailsService).
+    //  DELETE this whole users() bean — from the "LESSON 6 — TASK C"
+    //  comment below down to its closing }  — and the unused imports
+    //  (VS Code greys them out).
+    //  Why? Two UserDetailsService beans = Spring doesn't know which to use.
+    // =================================================================
+
+    // =================================================================
     //  LESSON 6 — TASK C: REPLACE THE PLAIN PASSWORDS WITH HASHES
     //
     //  1. In the terminal run:   ./hash.sh <girish's password>
@@ -66,29 +75,6 @@ public class SecurityConfig {
     //  3. Same for boss:         ./hash.sh <boss password>
     // =================================================================
 
-    @Bean
-    public UserDetailsService users() {
-
-        // A normal user. Role: USER
-        UserDetails girish = User.withUsername("girish")
-                .password("$2a$10$XFM.lJkyeZGiHLUUDtczwO.7XZEKZFwBG7vBwe8.hzOPxu6I35AE2")
-                .roles("USER")
-                .build();
-
-        UserDetails boss = User.withUsername("boss")
-                .password("$2a$10$SRKOtbevGWAZnET88cZKOeeBidcHgtj04pwIK0JPE/8TFbi0nZX2q")
-                .roles("ADMIN")
-                .build();
-
-        // DONE ✅ (Lesson 5): Create a second user, just like girish above, but:
-        //            - variable name:  boss
-        //            - username:       boss
-        //            - password:       {noop}<a password>
-        //            - role:           ADMIN
-
-
-        return new InMemoryUserDetailsManager(girish, boss);
-    }
 
     // =================================================================
     //  LESSON 6 — TASK B: THE PASSWORD CHECKER

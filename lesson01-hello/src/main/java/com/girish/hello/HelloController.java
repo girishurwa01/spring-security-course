@@ -2,6 +2,8 @@ package com.girish.hello;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.ArrayList;
+import java.util.List;
 
 // =====================================================================
 
@@ -69,4 +71,40 @@ return "Welcome Admin";
 
 }
 
+    // =================================================================
+    //  LESSON 7 (written for you): an ADMIN page that shows every row
+    //  of the app_user table, so you can SEE your database.
+    //  Open  http://localhost:8080/admin/users  as boss.
+    // =================================================================
+    private final UserRepository repo;
+
+    public HelloController(UserRepository repo) {
+        this.repo = repo;
+    }
+
+    // =================================================================
+    //  LESSON 7 — TODO H: STOP SENDING THE DATABASE BOX TO THE BROWSER
+    //
+    //  Before: returned List<AppUser>  → JSON had the password hash 😱
+    //  Now:    return List<UserView>   → only safe fields ✅
+    //
+    //  The loop goes through every AppUser from the database, one by one.
+    //  For each one, copy its safe values into a NEW UserView box —
+    //  same idea as copying AppUser → Spring's User box in TODO D!
+    // =================================================================
+    @GetMapping("/admin/users")
+    public List<UserView> users() {
+        List<UserView> result = new ArrayList<>();     // an empty list of safe boxes
+
+        for (AppUser u : repo.findAll()) {              // for EACH user u in the DB...
+
+            // TODO H: create a new UserView from u's SAFE values, and add it:
+            //         result.add(new UserView( ... , ... , ... ));
+            //         Hint: u.getId()  u.getUsername()  u.getRole()
+            result.add(new UserView(u.getId(),u.getUsername(),u.getRole()));
+
+        }
+
+        return result;                                  // send the safe boxes
+    }
 }
