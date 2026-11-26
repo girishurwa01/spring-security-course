@@ -38,7 +38,7 @@ public class HelloController {
     // =================================================================
     //  LESSON 4 — TASK A: a second, SECRET endpoint
     //
-    //  TODO A: Below this comment, write a whole new method, just like
+    //  DONE ✅ (Lesson 4): Below this comment, write a whole new method, just like
     //          sayHello() above, but:
     //            - it answers GET on  /secret
     //            - the method is called  secret
@@ -51,10 +51,22 @@ public class HelloController {
         return "Top Secret";
     }
 
+    // =================================================================
+    //  LESSON 5 — TASK A: an ADMIN-only page
+    //
+    //  TODO A: Below this comment, write a method that:
+    //            - answers GET on  /admin
+    //            - is called       admin
+    //            - returns         "Welcome, Admin!"
+    // =================================================================
+@GetMapping("/admin")
+
+public String admin(){
+
+return "Welcome Admin";
 
 
 
-
-
+}
 
 }
