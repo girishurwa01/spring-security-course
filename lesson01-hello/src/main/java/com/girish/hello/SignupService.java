@@ -30,7 +30,7 @@ public class SignupService {
         if (request.username() == null || request.username().isBlank())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is required");
 
-        // Remember Lesson 6: "admin123" was guess #7. Short passwords get cracked.
+        // Remember Lesson 6: a common short password was guess #7. Short passwords get cracked.
         if (request.password() == null || request.password().length() < 8)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password must be at least 8 characters");
 
