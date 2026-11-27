@@ -1,15 +1,9 @@
 package com.girish.hello;
 
-import java.beans.BeanProperty;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,80 +18,34 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/hello", "/error").permitAll()
+                // TODO E (Lesson 8): people signing up are NOT logged in yet!
+                //         Add "/signup" to this permitAll list.
+                .requestMatchers("/hello", "/error", "/signup").permitAll()
                 .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")   // /** = "and everything under /admin/"
-
-                // DONE ✅ (Lesson 5): only users with role ADMIN may open /admin.
-                //          Write:  .requestMatchers("<url>").hasRole("<ROLE>")
-                //          Think: must it go BEFORE or AFTER anyRequest()? Why?
 
                 .anyRequest().authenticated()
             )
-            .formLogin(Customizer.withDefaults());
+            .formLogin(Customizer.withDefaults())
+            // Lesson 8 (written for you): let /signup accept JSON POSTs from curl.
+            // CSRF protection would block them with 403. WHY it exists, and how to
+            // do this properly, is exactly Lesson 9. 🔜
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/signup"));
 
         return http.build();
     }
 
     // =================================================================
-    //  BEAN 2 (NEW in Lesson 5): THE LIST OF USERS
+    //  BEAN 2: THE PASSWORD CHECKER  (you wrote this in Lesson 6)
+    //  Spring uses it at login:  encoder.matches(typed, storedHash)
+    //  and SignupService uses it to hash new passwords (Lesson 8).
     //
-    //  A UserDetailsService answers one question for the guard 🛡️:
-    //     "Here is a username — who is this, what is their password,
-    //      and what ROLES do they have?"
-    //
-    //  InMemoryUserDetailsManager = keep the users in memory (RAM).
-    //  (Lesson 7 will move them into a real database.)
-    //
-    //  {noop} in front of a password = "no operation": the password is
-    //  stored as plain text. FINE FOR PRACTICE ONLY. Lesson 6 replaces
-    //  it with proper hashing.
-    //
-    //  Because YOU now provide a UserDetailsService, Spring Boot's
-    //  auto-configuration steps back again: the user in
-    //  application.properties is no longer used. (See TODO C there.)
-    // =================================================================
-    // =================================================================
-    //  LESSON 7 — TODO F (do this LAST, after TODO E):
-    //  Your users now live in the DATABASE (data.sql + DbUserDetailsService).
-    //  DELETE this whole users() bean — from the "LESSON 6 — TASK C"
-    //  comment below down to its closing }  — and the unused imports
-    //  (VS Code greys them out).
-    //  Why? Two UserDetailsService beans = Spring doesn't know which to use.
-    // =================================================================
-
-    // =================================================================
-    //  LESSON 6 — TASK C: REPLACE THE PLAIN PASSWORDS WITH HASHES
-    //
-    //  1. In the terminal run:   ./hash.sh <girish's password>
-    //     Copy the line it prints (starts with $2a$10$...).
-    //  2. Replace "{noop}..." for girish with "<that hash>"
-    //     (remove {noop} too — the whole thing becomes just the hash).
-    //  3. Same for boss:         ./hash.sh <boss password>
-    // =================================================================
-
-
-    // =================================================================
-    //  LESSON 6 — TASK B: THE PASSWORD CHECKER
-    //
-    //  A PasswordEncoder tells Spring HOW passwords are stored.
-    //  When someone logs in, Spring does:
-    //      encoder.matches(typedPassword, storedHash)  → true / false
-    //
-    //  TODO B: Below this comment, write a @Bean method:
-    //            - return type:  PasswordEncoder
-    //            - name:         passwordEncoder
-    //            - no parameters
-    //            - body:         return new BCryptPasswordEncoder();
-    //
-    //  Hint: look at how  public UserDetailsService users() { ... }
-    //        is written above — same shape, much shorter.
+    //  Users are NOT in this file any more: they live in the database
+    //  and are loaded by DbUserDetailsService (Lesson 7).
     // =================================================================
 
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
-
 
 }

@@ -10,5 +10,5 @@
 --          in place of PASTE_..._HASH. Keep the 'single quotes'.
 -- =====================================================================
 
-INSERT INTO app_user (id, username, password, role) VALUES (1, 'girish', '$2a$10$XFM.lJkyeZGiHLUUDtczwO.7XZEKZFwBG7vBwe8.hzOPxu6I35AE2', 'USER');
-INSERT INTO app_user (id, username, password, role) VALUES (2, 'boss',   '$2a$10$SRKOtbevGWAZnET88cZKOeeBidcHgtj04pwIK0JPE/8TFbi0nZX2q',   'ADMIN');
+INSERT INTO app_user (username, password, role) VALUES ('girish', '$2a$10$XFM.lJkyeZGiHLUUDtczwO.7XZEKZFwBG7vBwe8.hzOPxu6I35AE2', 'USER');
+INSERT INTO app_user (username, password, role) VALUES ('boss',   '$2a$10$SRKOtbevGWAZnET88cZKOeeBidcHgtj04pwIK0JPE/8TFbi0nZX2q',   'ADMIN');

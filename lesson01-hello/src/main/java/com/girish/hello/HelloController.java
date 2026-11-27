@@ -1,6 +1,8 @@
 package com.girish.hello;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +19,15 @@ import java.util.List;
 
 // =====================================================================
 
+
+
 // TODO 1: On the empty line below, type the annotation that tells Spring
 //         "this class answers web requests and sends back plain data".
 //         Hint: look at the imports above — one of them is a class annotation.
+
+
+
+
 
 @RestController
 
@@ -78,8 +86,11 @@ return "Welcome Admin";
     // =================================================================
     private final UserRepository repo;
 
-    public HelloController(UserRepository repo) {
+    private final SignupService signupService;   // Lesson 8
+
+    public HelloController(UserRepository repo, SignupService signupService) {
         this.repo = repo;
+        this.signupService = signupService;
     }
 
     // =================================================================
@@ -92,6 +103,7 @@ return "Welcome Admin";
     //  For each one, copy its safe values into a NEW UserView box —
     //  same idea as copying AppUser → Spring's User box in TODO D!
     // =================================================================
+
     @GetMapping("/admin/users")
     public List<UserView> users() {
         List<UserView> result = new ArrayList<>();     // an empty list of safe boxes
@@ -106,5 +118,26 @@ return "Welcome Admin";
         }
 
         return result;                                  // send the safe boxes
+    }
+
+    // =================================================================
+    //  LESSON 8 — TODO D: THE SIGN-UP DOOR 🚪
+    //
+    //  GET  = "give me something"   (open a page)   → @GetMapping
+    //  POST = "here, take this"     (send data)     → @PostMapping
+    //
+    //  Sign-up SENDS data (username + password), so it's a POST.
+    @PostMapping("/signup")
+    //
+    //  TODO D1: on the empty line above the method, add the annotation
+    //           for a POST on  /signup
+    //  TODO D2: in front of  SignupRequest request  add the annotation
+    //           that says "build this from the JSON in the request body"
+    //           (look at the imports at the top of this file 😉)
+    // =================================================================
+
+    public UserView signup(@RequestBody SignupRequest request) {
+
+        return signupService.signup(request);   // waiter → chef
     }
 }

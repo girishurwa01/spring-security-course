@@ -7,21 +7,23 @@ Each finished lesson is a **git tag** (`lesson-05`, `lesson-06`, …), so you ca
 ![Java](https://img.shields.io/badge/Java-25-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.2-brightgreen)
 ![Spring Security](https://img.shields.io/badge/Spring%20Security-7.2-brightgreen)
-![Progress](https://img.shields.io/badge/lessons-7%20%2F%2021-blue)
+![Progress](https://img.shields.io/badge/lessons-8%20%2F%2021-blue)
 
 ---
 
-## What the app does today (after Lesson 7)
+## What the app does today (after Lesson 8)
 
 | URL | Who can open it |
 |---|---|
 | `/hello` | everyone, no login |
+| `POST /signup` | everyone: creates a new USER account (JSON in, safe JSON out) |
 | `/secret` | any logged-in user |
 | `/admin` | only users with role `ADMIN` |
 | `/admin/users` | only `ADMIN`; lists users **without** password hashes (DTO) |
 
 - Users live in a database (JPA + H2) and are loaded at login by a custom `UserDetailsService`.
 - Passwords are stored only as **BCrypt hashes** (salted, cost 10), never as plain text.
+- New users can **sign up** themselves: the password is validated (8+ chars), BCrypt-hashed and saved; the role is always `USER`, never taken from the request.
 - URL rules are defined in my own `SecurityFilterChain`, with role-based access.
 
 ### Login flow
@@ -57,11 +59,13 @@ sequenceDiagram
 | 5 | Roles | `hasRole("ADMIN")`, 401 vs 403, `UserDetailsService`, roles are case-sensitive |
 | 6 | Password hashing | `PasswordEncoder` + BCrypt: salt, cost factor, one-way hashing, how `matches()` verifies a login, why unsalted hashes can be cracked by lookup |
 | 7 | Database users | `@Entity`, `JpaRepository`, derived queries (`findByUsername`), custom `UserDetailsService`, **DTOs so hashes never leave the server** |
+| 8 | Sign-up | `@PostMapping` + `@RequestBody`, request DTO, service layer, `repo.save`, input validation, 400 / 409 errors, unique usernames, **mass-assignment protection** |
 
 ### Security lessons I learned by finding the bugs myself
 - **A wrong rule doesn't crash anything.** `hasRole("admin")` vs `ADMIN` quietly locked out the real admin, which is why I test with real logins and not just "does it compile".
 - **Swapped hashes = swapped passwords.** A hash belongs to the password it was made from, not to the user.
 - **Never return entities from a controller.** My `/admin/users` endpoint first leaked every user's BCrypt hash. Leaked hashes allow offline guessing, so I fixed it with a `UserView` DTO.
+- **Never let the client choose its own role.** A sign-up request sending `"role":"ADMIN"` still gets `USER`, because the request DTO has no role field and the service sets the role itself (mass-assignment protection).
 - **Plain-text secrets hide in comments too.** Cleaning code means checking comments and git history, not only the code itself.
 
 ---
@@ -90,7 +94,7 @@ sequenceDiagram
 - [x] 5. Roles (USER / ADMIN)
 - [x] 6. BCrypt password hashing
 - [x] 7. Users in a database (JPA + H2) + DTOs
-- [ ] 8. Sign-up (registering new users)
+- [x] 8. Sign-up (registering new users)
 - [ ] 9. CSRF and CORS
 
 **Part 2: Docker and tokens**
@@ -120,7 +124,15 @@ cd lesson01-hello
 mvn spring-boot:run
 ```
 
-Then open `http://localhost:8080/hello`. The demo users (`girish` with role USER, `boss` with role ADMIN) are seeded from `src/main/resources/data.sql`.
+Then open `http://localhost:8080/hello`, or sign up:
+
+```bash
+curl -H 'Content-Type: application/json' \
+     -d '{"username":"priya","password":"Sunflower#42"}' \
+     http://localhost:8080/signup
+```
+
+ The demo users (`girish` with role USER, `boss` with role ADMIN) are seeded from `src/main/resources/data.sql`.
 
 > ⚠️ This is a learning project. The demo passwords are practice values only, and some appear in early commits on purpose (Lessons 3–5 stored them in plain text before Lesson 6 introduced hashing).
 
